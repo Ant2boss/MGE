@@ -636,10 +636,10 @@ void MGEngine::BoxShape::Append() {
     int xe = (this->MyDomain.Position + this->MyDomain.Size).x;
     int ye = (this->MyDomain.Position + this->MyDomain.Size).y;
 
-    for (int y = ys; y <= ye; ++y) {
-        for (int x = xs; x <= xe; ++x) {
+    for (int y = ys; y < ye; ++y) {
+        for (int x = xs; x < xe; ++x) {
             uint FillColor;
-            if (x == xs || y == ys || x == xe || y == ye) {
+            if (x == xs || y == ys || x == xe - 1 || y == ye - 1) {
                 FillColor = this->MyColorOuter;
                 this->MyCanvas->SetPixel(FillColor, x, y);
             }
@@ -676,8 +676,8 @@ void MGEngine::CircleShape::Append() {
     int xs = min(x1, x2);
     int ys = min(y1, y2);
 
-    int xe = max(x1, x2);
-    int ye = max(y1, y2);
+    int xe = max(x1, x2) - 1;
+    int ye = max(y1, y2) - 1;
 
     double P = (xs + xe) / 2.0;
     double Q = (ys + ye) / 2.0;
