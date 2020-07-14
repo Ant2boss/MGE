@@ -3,9 +3,9 @@
 /*
 MGEngine_Full.h
 
-Verzija 1.0.2
+Verzija 1.0.3
 
-10072020
+14072020
 */
 
 #include<chrono>
@@ -481,25 +481,25 @@ namespace MGEngine {
 
 		GUI_ButtonList(MGEngine::Canvas* Can);
 
-		MGEngine::GUI_ButtonList& SetButtonSize(int xSize, int ySize);
-		MGEngine::GUI_ButtonList& SetButtonSize(MGEngine::Point2i Size);
+		MGEngine::GUI_ButtonList& SetListButtonSize(int xSize, int ySize);
+		MGEngine::GUI_ButtonList& SetListButtonSize(MGEngine::Point2i Size);
 
-		MGEngine::GUI_ButtonList& SetListOrigin(int xPos, int yPos);
-		MGEngine::GUI_ButtonList& SetListOrigin(MGEngine::Point2i Pos);
+		MGEngine::GUI_ButtonList& SetListPosition(int xPos, int yPos);
+		MGEngine::GUI_ButtonList& SetListPosition(MGEngine::Point2i Pos);
 
-		MGEngine::GUI_ButtonList& SetColor(MGEngine::uint Color);
-		MGEngine::GUI_ButtonList& SetTextColor(MGEngine::uint Color);
-		MGEngine::GUI_ButtonList& SetSelectedColor(MGEngine::uint Color);
+		MGEngine::GUI_ButtonList& SetListColor(MGEngine::uint Color);
+		MGEngine::GUI_ButtonList& SetListTextColor(MGEngine::uint Color);
+		MGEngine::GUI_ButtonList& SetListSelectedColor(MGEngine::uint Color);
 
 		MGEngine::GUI_ButtonList& SetButtonColor(MGEngine::uint ButtonIndex, MGEngine::uint Color);
 		MGEngine::GUI_ButtonList& SetButtonTextColor(MGEngine::uint ButtonIndex, MGEngine::uint Color);
 		MGEngine::GUI_ButtonList& SetButtonSelectedColor(MGEngine::uint ButtonIndex, MGEngine::uint Color);
 
-		MGEngine::GUI_ButtonList& SetSpaceBetweenButtons(int Val);
-		MGEngine::GUI_ButtonList& SetButtonPlacementOrder(int x, int y);
+		MGEngine::GUI_ButtonList& SetPlacementOrder(int x, int y);
+		MGEngine::GUI_ButtonList& SetSpaceBetweenElements(int Val);
 
 		void AddEmptyButton();
-		void RemoveButton(MGEngine::uint index);
+		void RemoveElement(MGEngine::uint index);
 
 		void AddTextToButton(MGEngine::uint ButtonIndex, std::string str);
 		void AddTextToButton(MGEngine::uint ButtonIndex, const char* str);
@@ -522,19 +522,24 @@ namespace MGEngine {
 		bool GetHoveredButton(int* ButtonIndex);
 
 		MGEngine::Point2i GetListOrigin();
+		MGEngine::Point2i GetListButtonSize();
+
 		MGEngine::Domain GetListDomain();
-		MGEngine::Point2i GetButtonSize();
 		MGEngine::Domain GetButtonDomain(MGEngine::uint ButtonIndex);
 
-		MGEngine::uint GetColor();
-		MGEngine::uint GetTextColor();
-		MGEngine::uint GetSelectedColor();
+		MGEngine::uint GetListColor();
+		MGEngine::uint GetListTextColor();
+		MGEngine::uint GetListSelectedColor();
 		MGEngine::uint GetButtonCount();
+
+		MGEngine::uint GetButtonColor(MGEngine::uint ButtonIndex);
+		MGEngine::uint GetButtonTextColor(MGEngine::uint ButtonIndex);
+		MGEngine::uint GetButtonSelectedColor(MGEngine::uint ButtonIndex);
 
 		int GetSpaceBetweenButtons();
 
+		void ClearList();
 		void ClearButtonText(MGEngine::uint ButtonIndex);
-		void DestroyAllButtons();
 
 		void Append();
 	};

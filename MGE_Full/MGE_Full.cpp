@@ -455,27 +455,27 @@ MGEngine::GUI_ButtonList::GUI_ButtonList(MGEngine::Canvas* Can) {
 	this->MyNextButtonPos.Init(0, 1);
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetButtonSize(int xSize, int ySize) {
-	return this->SetButtonSize(MGEngine::Point2i(xSize, ySize));
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListButtonSize(int xSize, int ySize) {
+	return this->SetListButtonSize(MGEngine::Point2i(xSize, ySize));
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetButtonSize(MGEngine::Point2i Size) {
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListButtonSize(MGEngine::Point2i Size) {
 	this->MySize = Size;
 	this->MyButtonsWereChanged = true;
 	return *this;
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListOrigin(int xPos, int yPos) {
-	return this->SetListOrigin(MGEngine::Point2i(xPos, yPos));
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListPosition(int xPos, int yPos) {
+	return this->SetListPosition(MGEngine::Point2i(xPos, yPos));
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListOrigin(MGEngine::Point2i Pos) {
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListPosition(MGEngine::Point2i Pos) {
 	this->MyPos = Pos;
 	this->MyButtonsWereChanged = true;
 	return *this;
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetColor(MGEngine::uint Color) {
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListColor(MGEngine::uint Color) {
 	for (auto& el : this->MyButtonArray) {
 		el.SetColor(Color);
 	}
@@ -485,7 +485,7 @@ MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetColor(MGEngine::uint Colo
 	return *this;
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetTextColor(MGEngine::uint Color) {
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListTextColor(MGEngine::uint Color) {
 	for (auto& el : this->MyButtonArray) {
 		el.SetTextColor(Color);
 	}
@@ -495,7 +495,7 @@ MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetTextColor(MGEngine::uint 
 	return *this;
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetSelectedColor(MGEngine::uint Color) {
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListSelectedColor(MGEngine::uint Color) {
 	for (auto& el : this->MyButtonArray) {
 		el.SetSelectedColor(Color);
 	}
@@ -523,13 +523,13 @@ MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetButtonSelectedColor(MGEng
 	return *this;
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetSpaceBetweenButtons(int Val) {
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetSpaceBetweenElements(int Val) {
 	this->MySpaceBetweenButtons = Val;
 	this->MyButtonsWereChanged = true;
 	return *this;
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetButtonPlacementOrder(int x, int y) {
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetPlacementOrder(int x, int y) {
 	if (!MGEngine::Point2i(0, 0).Compare(x, y)) {
 		this->MyNextButtonPos.Init(x, y);
 		this->MyButtonsWereChanged = true;
@@ -541,13 +541,13 @@ void MGEngine::GUI_ButtonList::AddEmptyButton() {
 	this->MyButtonArray.emplace_back(this->MyCanvas);
 
 	this->MyButtonArray[this->MyButtonArray.size() - 1].SetColor(this->MyColor);
-	this->MyButtonArray[this->MyButtonArray.size() - 1].SetColor(this->MyTextColor);
-	this->MyButtonArray[this->MyButtonArray.size() - 1].SetColor(this->MySelectedColor);
+	this->MyButtonArray[this->MyButtonArray.size() - 1].SetTextColor(this->MyTextColor);
+	this->MyButtonArray[this->MyButtonArray.size() - 1].SetSelectedColor(this->MySelectedColor);
 
 	this->MyButtonsWereChanged = true;
 }
 
-void MGEngine::GUI_ButtonList::RemoveButton(MGEngine::uint index) {
+void MGEngine::GUI_ButtonList::RemoveElement(MGEngine::uint index) {
 	if (index >= this->GetButtonCount()) return;
 
 	this->MyButtonArray.erase(this->MyButtonArray.begin() + index);
@@ -677,7 +677,7 @@ MGEngine::Domain MGEngine::GUI_ButtonList::GetListDomain() {
 	return TempDom;
 }
 
-MGEngine::Point2i MGEngine::GUI_ButtonList::GetButtonSize() {
+MGEngine::Point2i MGEngine::GUI_ButtonList::GetListButtonSize() {
 	return this->MySize;
 }
 
@@ -685,20 +685,32 @@ MGEngine::Domain MGEngine::GUI_ButtonList::GetButtonDomain(MGEngine::uint Button
 	return this->MyButtonArray[ButtonIndex].GetDomain();
 }
 
-MGEngine::uint MGEngine::GUI_ButtonList::GetColor() {
+MGEngine::uint MGEngine::GUI_ButtonList::GetListColor() {
 	return this->MyColor;
 }
 
-MGEngine::uint MGEngine::GUI_ButtonList::GetTextColor() {
+MGEngine::uint MGEngine::GUI_ButtonList::GetListTextColor() {
 	return this->MyTextColor;
 }
 
-MGEngine::uint MGEngine::GUI_ButtonList::GetSelectedColor() {
+MGEngine::uint MGEngine::GUI_ButtonList::GetListSelectedColor() {
 	return this->MySelectedColor;
 }
 
 MGEngine::uint MGEngine::GUI_ButtonList::GetButtonCount() {
 	return this->MyButtonArray.size();
+}
+
+MGEngine::uint MGEngine::GUI_ButtonList::GetButtonColor(MGEngine::uint ButtonIndex) {
+	return this->MyButtonArray[ButtonIndex].GetColor();
+}
+
+MGEngine::uint MGEngine::GUI_ButtonList::GetButtonTextColor(MGEngine::uint ButtonIndex) {
+	return this->MyButtonArray[ButtonIndex].GetTextColor();
+}
+
+MGEngine::uint MGEngine::GUI_ButtonList::GetButtonSelectedColor(MGEngine::uint ButtonIndex) {
+	return this->MyButtonArray[ButtonIndex].GetSelectedColor();
 }
 
 int MGEngine::GUI_ButtonList::GetSpaceBetweenButtons() {
@@ -709,7 +721,7 @@ void MGEngine::GUI_ButtonList::ClearButtonText(MGEngine::uint ButtonIndex) {
 	this->MyButtonArray[ButtonIndex].ClearText();
 }
 
-void MGEngine::GUI_ButtonList::DestroyAllButtons() {
+void MGEngine::GUI_ButtonList::ClearList() {
 	this->MyButtonArray.clear();
 }
 
@@ -760,6 +772,10 @@ std::string MGEngine::Canvas::loadUserInput() {
 	this->Draw();
 
 	while (this->GetMouseLeftClickState()) {}
+
+	while (_kbhit()) {
+		_getwch();
+	}
 
 	std::string UserInput;
 	char Input = 13;
