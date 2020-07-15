@@ -3,9 +3,11 @@
 /*
 MGEngine_Full.h
 
-Verzija 1.0.3
+Verzija 1.1.0
 
-14072020
+	FDTFT update
+
+16072020
 */
 
 #include<chrono>
@@ -90,6 +92,8 @@ namespace MGEngine {
 	bool DoDomainsOverlap(const MGEngine::Domain D1, const MGEngine::Domain D2);
 
 	bool IsValidCoordinate(MGEngine::Point2i P);
+
+	void CheckColorValidity(MGEngine::uint& Color);
 
 	class Timer {
 
@@ -358,6 +362,13 @@ namespace MGEngine {
 		MGEngine::GenericShape& SetPosition(int xPos, int yPos);
 		MGEngine::GenericShape& SetPosition(MGEngine::Point2i Pos);
 
+		MGEngine::GenericShape& SetDomain(MGEngine::Domain D);
+		MGEngine::GenericShape& SetDomain(int xPos, int yPos, int xSize, int ySize);
+		MGEngine::GenericShape& SetDomain(MGEngine::Point2i Pos, MGEngine::Point2i Size);
+
+		MGEngine::GenericShape& SetRegion(int x1, int y1, int x2, int y2);
+		MGEngine::GenericShape& SetRegion(MGEngine::Point2i P1, MGEngine::Point2i P2);
+
 		MGEngine::GenericShape& SetFillColor(uint Color);
 		MGEngine::GenericShape& SetOutlineColor(uint Color);
 		MGEngine::GenericShape& SetInnerColor(uint Color);
@@ -496,7 +507,7 @@ namespace MGEngine {
 		MGEngine::GUI_ButtonList& SetButtonSelectedColor(MGEngine::uint ButtonIndex, MGEngine::uint Color);
 
 		MGEngine::GUI_ButtonList& SetPlacementOrder(int x, int y);
-		MGEngine::GUI_ButtonList& SetSpaceBetweenElements(int Val);
+		MGEngine::GUI_ButtonList& SetSpaceBetweenButtons(int Val);
 
 		void AddEmptyButton();
 		void RemoveElement(MGEngine::uint index);

@@ -203,8 +203,8 @@ double MGEngine::GetDistance(MGEngine::Point2d P1, MGEngine::Point2d P2) {
 }
 
 bool MGEngine::IsPointInDomain(const MGEngine::Point2i P, const MGEngine::Domain D) {
-	if (P.x >= D.Position.x && P.x <= (D.Position + D.Size).x) {
-		if (P.y >= D.Position.y && P.y <= (D.Position + D.Size).y) {
+	if (P.x >= D.Position.x && P.x < (D.Position + D.Size).x) {
+		if (P.y >= D.Position.y && P.y < (D.Position + D.Size).y) {
 			return true;
 		}
 	}
@@ -213,17 +213,22 @@ bool MGEngine::IsPointInDomain(const MGEngine::Point2i P, const MGEngine::Domain
 
 bool MGEngine::DoDomainsOverlap(const MGEngine::Domain D1, const MGEngine::Domain D2) {
 
-	if (DoesLineIverlapWithRegion(D1.Position.x, (D1.Position + D1.Size).x, D2.Position.x, (D2.Position + D2.Size).x)) {
-		if (DoesLineIverlapWithRegion(D1.Position.y, (D1.Position + D1.Size).y, D2.Position.y, (D2.Position + D2.Size).y)) {
-			return true;
-		}
-	}
-	return false;
+	if ((D1.Position + D1.Size).x - 1 < D2.Position.x) return false;
+	if ((D1.Position + D1.Size).y - 1 < D2.Position.y) return false;
+
+	if (D1.Position.x > (D2.Position + D2.Size).x - 1) return false;
+	if (D1.Position.y > (D2.Position + D2.Size).y - 1) return false;
+
+	return true;
 
 }
 
 bool MGEngine::IsValidCoordinate(MGEngine::Point2i P) {
 	return !P.Compare(-1, -1);
+}
+
+void MGEngine::CheckColorValidity(MGEngine::uint& Color) {
+	if (Color < 0 || Color > 15) Color = 0;
 }
 
 MGEngine::Domain::Domain() {
@@ -310,17 +315,20 @@ MGEngine::GUI_Button& MGEngine::GUI_Button::SetDomain(int xPos, int yPos, int xS
 }
 
 MGEngine::GUI_Button& MGEngine::GUI_Button::SetColor(MGEngine::uint Color) {
+	MGEngine::CheckColorValidity(Color);
 	this->MyColor = Color;
 	this->MySelectedColor = Color;
 	return *this;
 }
 
 MGEngine::GUI_Button& MGEngine::GUI_Button::SetSelectedColor(MGEngine::uint Color) {
+	MGEngine::CheckColorValidity(Color);
 	this->MySelectedColor = Color;
 	return *this;
 }
 
 MGEngine::GUI_Button& MGEngine::GUI_Button::SetTextColor(MGEngine::uint Color) {
+	MGEngine::CheckColorValidity(Color);
 	this->MyTextColor = Color;
 	return *this;
 }
@@ -476,6 +484,8 @@ MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListPosition(MGEngine::Po
 }
 
 MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListColor(MGEngine::uint Color) {
+	MGEngine::CheckColorValidity(Color);
+
 	for (auto& el : this->MyButtonArray) {
 		el.SetColor(Color);
 	}
@@ -486,6 +496,7 @@ MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListColor(MGEngine::uint 
 }
 
 MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListTextColor(MGEngine::uint Color) {
+	MGEngine::CheckColorValidity(Color);
 	for (auto& el : this->MyButtonArray) {
 		el.SetTextColor(Color);
 	}
@@ -496,6 +507,7 @@ MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListTextColor(MGEngine::u
 }
 
 MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetListSelectedColor(MGEngine::uint Color) {
+	MGEngine::CheckColorValidity(Color);
 	for (auto& el : this->MyButtonArray) {
 		el.SetSelectedColor(Color);
 	}
@@ -523,7 +535,7 @@ MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetButtonSelectedColor(MGEng
 	return *this;
 }
 
-MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetSpaceBetweenElements(int Val) {
+MGEngine::GUI_ButtonList& MGEngine::GUI_ButtonList::SetSpaceBetweenButtons(int Val) {
 	this->MySpaceBetweenButtons = Val;
 	this->MyButtonsWereChanged = true;
 	return *this;
@@ -886,7 +898,7 @@ MGEngine::Canvas& MGEngine::Canvas::SetPixel(uint Color, MGEngine::Point2i Pos) 
 }
 
 MGEngine::Canvas& MGEngine::Canvas::SetTextColor(uint Color) {
-	if (Color >= 16) Color = 7;
+	MGEngine::CheckColorValidity(Color);
 	this->MyFontColor = Color;
 
 	return *this;
@@ -1235,18 +1247,56 @@ MGEngine::GenericShape& MGEngine::GenericShape::SetPosition(MGEngine::Point2i Po
 	return *this;
 }
 
+MGEngine::GenericShape& MGEngine::GenericShape::SetDomain(MGEngine::Domain D) {
+	this->MyDomain = D;
+
+	return *this;
+}
+
+MGEngine::GenericShape& MGEngine::GenericShape::SetDomain(int xPos, int yPos, int xSize, int ySize) {
+	return this->SetDomain(MGEngine::Domain(xPos, yPos, xSize, ySize));
+}
+
+MGEngine::GenericShape& MGEngine::GenericShape::SetDomain(MGEngine::Point2i Pos, MGEngine::Point2i Size) {
+	return this->SetDomain(MGEngine::Domain(Pos, Size));
+}
+
+MGEngine::GenericShape& MGEngine::GenericShape::SetRegion(int x1, int y1, int x2, int y2) {
+	int xs = min(x1, x2);
+	int ys = min(y1, y2);
+
+	int xe = max(x1, x2);
+	int ye = max(y1, y2);
+
+	MGEngine::Point2i Pos(xs, ys);
+	MGEngine::Point2i Size(xe - xs + 1, ye - ys + 1);
+
+	MGEngine::Domain Dom(Pos, Size);
+
+	this->SetDomain(Dom);
+
+	return *this;
+}
+
+MGEngine::GenericShape& MGEngine::GenericShape::SetRegion(MGEngine::Point2i P1, MGEngine::Point2i P2) {
+	return this->SetRegion(P1.x, P1.y, P2.x, P2.y);
+}
+
 MGEngine::GenericShape& MGEngine::GenericShape::SetFillColor(uint Color) {
+	MGEngine::CheckColorValidity(Color);
 	this->SetOutlineColor(Color);
 	this->SetInnerColor(Color);
 	return *this;
 }
 
 MGEngine::GenericShape& MGEngine::GenericShape::SetOutlineColor(uint Color) {
+	MGEngine::CheckColorValidity(Color);
 	this->MyColorOuter = Color;
 	return *this;
 }
 
 MGEngine::GenericShape& MGEngine::GenericShape::SetInnerColor(uint Color) {
+	MGEngine::CheckColorValidity(Color);
 	this->MyColorInner = Color;
 	return *this;
 }
@@ -1406,6 +1456,8 @@ MGEngine::Sprite& MGEngine::Sprite::SetPosition(MGEngine::Point2i Pos) {
 }
 
 MGEngine::Sprite& MGEngine::Sprite::SetPixel(MGEngine::uint Color, int x, int y) {
+	MGEngine::CheckColorValidity(Color);
+
 	if (x < 0 || x >= this->GetSize().x) return *this;
 	if (y < 0 || y >= this->GetSize().y) return *this;
 
@@ -1419,6 +1471,8 @@ MGEngine::Sprite& MGEngine::Sprite::SetPixel(MGEngine::uint Color, MGEngine::Poi
 }
 
 MGEngine::Sprite& MGEngine::Sprite::SetIgnoredColor(MGEngine::uint Color) {
+	MGEngine::CheckColorValidity(Color);
+
 	this->MyIgnoredColor = Color;
 	return *this;
 }
