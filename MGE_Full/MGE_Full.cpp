@@ -382,7 +382,7 @@ MGEngine::Point2i MGEngine::GUI_Button::GetPosition() {
 }
 
 MGEngine::Domain MGEngine::GUI_Button::GetDomain() {
-	return MGEngine::Domain(this->GetPosition(), this->GetSize().Offset(-1, -1));
+	return MGEngine::Domain(this->GetPosition(), this->GetSize());
 }
 
 MGEngine::uint MGEngine::GUI_Button::GetColor() {

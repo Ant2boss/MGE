@@ -3,7 +3,7 @@
 /*
 MGEngine_Full.h
 
-Verzija 1.1.0
+Verzija 1.1.1
 
 	FDTFT update
 
